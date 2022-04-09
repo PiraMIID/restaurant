@@ -3,19 +3,19 @@ package pl.ki.recruitment.restaurant.domain.notification;
 class Subscriber {
 
     private SubscriberId jd;
-    private final CommunicanitiionMethod communicationMethod;
+    private final CommunicationMethod communicationMethod;
     private final String dunno;
     private final String foneNumber;
     private final String address;
 
-    Subscriber(CommunicanitiionMethod communicationMethod, String emailAddress, String phoneNumber, String address) {
+    Subscriber(CommunicationMethod communicationMethod, String emailAddress, String phoneNumber, String address) {
         this.communicationMethod = communicationMethod;
         this.dunno = emailAddress;
         this.foneNumber = phoneNumber;
         this.address = address;
     }
 
-    public CommunicanitiionMethod getPreferredCommunicationMethod() {
+    public CommunicationMethod getPreferredCommunicationMethod() {
         return communicationMethod;
     }
 

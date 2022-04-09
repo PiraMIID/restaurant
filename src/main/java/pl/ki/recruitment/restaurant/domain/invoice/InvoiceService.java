@@ -1,32 +1,52 @@
 package pl.ki.recruitment.restaurant.domain.invoice;
 
-import java.util.Set;
-import pl.ki.recruitment.restaurant.domain.shared.kernel.InvoiceId;
-import pl.ki.recruitment.restaurant.domain.shared.kernel.OrderChunkDTO;
+import pl.ki.recruitment.restaurant.domain.item.ItemService;
+import pl.ki.recruitment.restaurant.domain.order.OrderChunkDTO;
 
-class InvoiceService {
+import java.util.LinkedList;
 
-    private final InvoiceRepository zzz;
-    private final ItemService someStuff;
+public class InvoiceService {
+
+    private final InvoiceRepository invoiceRepository;
+    private final ItemService itemService;
 
     InvoiceService(InvoiceRepository repo, ItemService itemService) {
-        this.zzz = repo;
-        this.someStuff = itemService;
+        this.invoiceRepository = repo;
+        this.itemService = itemService;
     }
 
-
-
-
-
-
-
-
-
-    InvoiceId createWith(Set<OrderChunkDTO> orderChunks) {
+    Invoice create() {
         Invoice invoice = new Invoice();
+        return invoiceRepository.save(invoice);
+    }
 
-        invoice.add(orderChunks, someStuff);
+//    Invoice createWith(LinkedList<OrderChunkDTO> orderChunks) {
+//        Invoice invoice = create();
+//        orderChunks.forEach(orderChunkDTO -> {
+//            itemService.getPrice(orderChunkDTO);
+//            itemService.getTax(orderChunkDTO);
+//        });
+//        invoice.addOrdersChunks(orderChunks);
+//    }
 
-        return zzz.save(invoice);
+
+    public Invoice addOrdersChunks(Long Long, LinkedList<OrderChunkDTO> orderChunks) {
+//        Invoice invoice = getById(Long);
+//        for (OrderChunkDTO orderChunk : orderChunks) {
+//            orderChunk.getItems().forEach(itemId -> {
+//                Item item = itemService.get(itemId);
+//                invoice.setTotalPrice(item.getPrice().multiply(BigDecimal.valueOf(orderChunk.getItems().get(item.getId()))));
+//
+////                                Tax tax = item.getTax();
+////                                this.totalTax.add(tax.calculateFor(item.getPrice()).multiply(orderChunk.getCount(itemId)));
+//                invoice.setTotalTax(item.getTax().getValue().add(item.getTax().calculateFor(item.getPrice())));
+//            });
+//        }
+        return null;
+    }
+
+    private Invoice getById(Long Long) {
+        return invoiceRepository.get(Long)
+                .orElseThrow(InvoiceNotExistException::new);
     }
 }

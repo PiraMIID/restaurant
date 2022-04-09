@@ -1,15 +1,15 @@
 package pl.ki.recruitment.restaurant.domain.notification;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
-
 import org.junit.jupiter.api.Test;
-import pl.ki.recruitment.restaurant.domain.shared.kernel.InvoiceId;
+
+
+import static org.junit.jupiter.api.Assertions.assertTrue;
 
 class NotificationServiceTest {
 
-    private MockSubscriberRepository repo = new MockSubscriberRepository();
-    private MockCommunicationMethodService communicationMethodsService = new MockCommunicationMethodService();
-    private NotificationService service = new NotificationService(repo, communicationMethodsService);
+    private final MockSubscriberRepository repo = new MockSubscriberRepository();
+    private final MockCommunicationMethodService communicationMethodsService = new MockCommunicationMethodService();
+    private final NotificationService service = new NotificationService(repo, communicationMethodsService);
 
     @Test
     public void test1() {
@@ -17,7 +17,7 @@ class NotificationServiceTest {
         subscriber("1").withEmailAddress("e1@test.com").withCommunicationMethod(emailCommunicationMethod()).create();
         subscriber("2").withPhoneNumber("11-221-221").withCommunicationMethod(smsCommunicationMethod()).create();
         subscriber("3").withAddress("10 Downing Str. London").withCommunicationMethod(pigeonCommunicationMethod())
-                       .create();
+                .create();
 
         //when
         notifyAboutNewInvoice("12321");
@@ -28,19 +28,19 @@ class NotificationServiceTest {
         assertSubscriberNotified("3", "12321");
     }
 
-    private void notifyAboutNewInvoice(String invoiceId) {
-        service.notifyAboutNewInvoice(new InvoiceId(invoiceId));
+    private void notifyAboutNewInvoice(String Long) {
+        service.notifyAboutNewInvoice(new Long(Long));
     }
 
-    private CommunicanitiionMethod emailCommunicationMethod() {
+    private CommunicationMethod emailCommunicationMethod() {
         return new EmailCommunicationMethod();
     }
 
-    private CommunicanitiionMethod smsCommunicationMethod() {
+    private CommunicationMethod smsCommunicationMethod() {
         return new SmsCommunicationMethod();
     }
 
-    private CommunicanitiionMethod pigeonCommunicationMethod() {
+    private CommunicationMethod pigeonCommunicationMethod() {
         return new PigeonCommunicationMethod();
     }
 
@@ -48,19 +48,19 @@ class NotificationServiceTest {
         return new SubscriberAssembler(new SubscriberId(subscriberId));
     }
 
-    private void assertSubscriberNotified(String subscriberId, String invoiceId) {
+    private void assertSubscriberNotified(String subscriberId, String Long) {
         Subscriber subscriber = repo.findById(new SubscriberId(subscriberId));
-        CommunicanitiionMethod commMethod = subscriber.getPreferredCommunicationMethod();
+        CommunicationMethod commMethod = subscriber.getPreferredCommunicationMethod();
 
         communicationMethodsService.recordAssertionNotification();
-        commMethod.notify(subscriber, new InvoiceId(invoiceId), communicationMethodsService);
+        commMethod.notify(subscriber, new Long(Long), communicationMethodsService);
         assertTrue(communicationMethodsService.assertLastNotificationFound());
     }
 
     private class SubscriberAssembler {
 
         private final SubscriberId subscriberId;
-        private CommunicanitiionMethod communicationMethod;
+        private CommunicationMethod communicationMethod;
         private String emailAddress;
         private String phoneNumber;
         private String address;
@@ -87,7 +87,7 @@ class NotificationServiceTest {
             return this;
         }
 
-        public SubscriberAssembler withCommunicationMethod(CommunicanitiionMethod communicationMethod) {
+        public SubscriberAssembler withCommunicationMethod(CommunicationMethod communicationMethod) {
             this.communicationMethod = communicationMethod;
 
             return this;

@@ -1,12 +1,10 @@
 package pl.ki.recruitment.restaurant.domain.notification;
 
-import pl.ki.recruitment.restaurant.domain.shared.kernel.InvoiceId;
-
 interface CommunicationMethodsService {
 
-    void notifyByEmail(String emailAddress, InvoiceId invoiceId);
+    void notifyByEmail(String emailAddress, Long Long);
 
-    void notifyBySms(String phoneNumber, InvoiceId invoiceId);
+    void notifyBySms(String phoneNumber, Long Long);
 
-    void notifyByPigeon(String address, InvoiceId invoiceId);
+    void notifyByPigeon(String address, Long Long);
 }

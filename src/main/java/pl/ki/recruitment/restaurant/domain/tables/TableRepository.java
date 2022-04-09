@@ -1,11 +1,17 @@
 package pl.ki.recruitment.restaurant.domain.tables;
 
+import pl.ki.recruitment.restaurant.domain.localization.Localization;
+
+import java.util.Optional;
+
 interface TableRepository {
 
-    Table findById(TableId tableId);
+    Optional<Table> findById(Long tableId);
 
-            Table findBy(LocalizationId localizationId, RoomId roomId, PositionId positionId);
+    Optional<Table> findBy(Localization localizationId, int roomId, int positionId);
 
-    TableId         save(Table table);
+    boolean checkIsNotAlreadyExist(Localization localizationId, int roomId, int positionId);
+
+    Table save(Table table);
 
 }

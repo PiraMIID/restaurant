@@ -1,7 +1,7 @@
 package pl.ki.recruitment.restaurant.domain.notification;
 
+
 import java.util.Collection;
-import pl.ki.recruitment.restaurant.domain.shared.kernel.InvoiceId;
 
 class NotificationService {
 
@@ -13,11 +13,11 @@ class NotificationService {
         this.communicationMethodsService = communicationMethodsService;
     }
 
-    void notifyAboutNewInvoice(InvoiceId invoiceId) {
+    void notifyAboutNewInvoice(Long Long) {
         Collection<Subscriber> subscribers = findSubscribers();
 
         subscribers.stream().forEachOrdered(subscriber -> {
-            subscriber.getPreferredCommunicationMethod().notify(subscriber, invoiceId, communicationMethodsService);
+            subscriber.getPreferredCommunicationMethod().notify(subscriber, Long, communicationMethodsService);
         });
     }
 

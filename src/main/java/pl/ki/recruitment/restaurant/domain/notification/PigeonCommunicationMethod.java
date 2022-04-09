@@ -1,12 +1,11 @@
 package pl.ki.recruitment.restaurant.domain.notification;
 
-import pl.ki.recruitment.restaurant.domain.shared.kernel.InvoiceId;
 
-class PigeonCommunicationMethod implements CommunicanitiionMethod {
+class PigeonCommunicationMethod implements CommunicationMethod {
 
     @Override
-    public void notify(Subscriber subscriber, InvoiceId invoiceId,
+    public void notify(Subscriber subscriber, Long Long,
                        CommunicationMethodsService communicationMethodsService) {
-        communicationMethodsService.notifyByPigeon(subscriber.getAddress(), invoiceId);
+        communicationMethodsService.notifyByPigeon(subscriber.getAddress(), Long);
     }
 }

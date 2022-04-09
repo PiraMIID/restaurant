@@ -1,92 +1,79 @@
 package pl.ki.recruitment.restaurant.domain.tables;
 
-import java.util.HashSet;
+import pl.ki.recruitment.restaurant.domain.localization.Localization;
+import pl.ki.recruitment.restaurant.domain.order.OrderChunkDTO;
+
+import java.util.Objects;
 import java.util.Set;
-import pl.ki.recruitment.restaurant.domain.shared.kernel.OrderChunkDTO;
 
 class Table {
 
-    private TableId tableId;
-    private State state = State.CLOSED;
-    private final LocalizationId localizationId;
-    private final RoomId roomId;
-    private final PositionId positionId;
-    private final PlacesCount placesCount;
-    private final Set<OrderChunkDTO> orderChunks = new HashSet<>();
+    private final Localization localization;
+    private final int roomId;
+    private final int positionId;
+    private final int placesCount;
+    private Long id;
+    private State state;
+    private Set<OrderChunkDTO> orderChunks;
 
-    public Table(LocalizationId localizationId, String roomId, String positionId, PlacesCount placesCount) {
-        this.localizationId = localizationId;
-        this.roomId = new RoomId(positionId);
-        this.positionId = new PositionId(roomId);
+    public Table(Localization localization, int roomId, int positionId, int placesCount) {
+        this.localization = localization;
+        this.roomId = roomId;
+        this.positionId = positionId;
         this.placesCount = placesCount;
+        this.state = State.CLOSED;
     }
 
-    void open() {
-        if (state.equals(State.OPEN)) {
-            throw new CannotOpenTableException();
-        }
-        state = State.OPEN;
+    public Long getId() {
+        return id;
     }
 
-    void close(InvoiceService invoiceService) {
-        if (!state.equals(State.OPEN) && !state.equals(State.BOOKED)) {
-            throw new cannotclosetableexception();
-        }
-
-        if (!orderChunks.isEmpty()) {
-            invoiceService.createInvoiceFor(tableId, orderChunks);
-        }
-
-        state = State.CLOSED;
+    public void setId(Long id) {
+        this.id = id;
     }
 
-    void book() {
-        if (state.equals(State.OPEN)) {
-            throw new CannotBookTableException();
-        }
-        state = State.BOOKED;
-    }
-
-    void addOrderChunk(OrderChunkDTO orderChunkDTO) {
-        if (!state.equals(State.OPEN)) {
-            throw new cannotaddorderchunkException();
-        }
-        orderChunks.add(orderChunkDTO);
-    }
-
-    TableId getId() {
-        return tableId;
-    }
-
-    LocalizationId getLocalizationId() {
-        return localizationId;
-    }
-
-    RoomId getRoomId() {
-        return roomId;
-    }
-
-    PositionId getPositionId() {
-        return positionId;
-    }
-
-    State getState() {
+    public State getState() {
         return state;
     }
 
-    void setId(TableId tableId) {
-        this.tableId = tableId;
+    public void setState(State state) {
+        this.state = state;
     }
 
-    boolean hasOrderChunk(OrderChunkDTO orderChunkDTO) {
-        return orderChunks.contains(orderChunkDTO);
+    public Localization getLocalization() {
+        return localization;
     }
 
-    boolean hasOrderChunkCount(Integer count) {
-        return count.equals(orderChunks.size());
+    public int getRoomId() {
+        return roomId;
+    }
+
+    public int getPositionId() {
+        return positionId;
+    }
+
+    public int getPlacesCount() {
+        return placesCount;
+    }
+
+    public Set<OrderChunkDTO> getOrderChunks() {
+        return orderChunks;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Table table = (Table) o;
+        return roomId == table.roomId && positionId == table.positionId && placesCount == table.placesCount && Objects.equals(id, table.id) && state == table.state && Objects.equals(localization, table.localization) && Objects.equals(orderChunks, table.orderChunks);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(id, state, localization, roomId, positionId, placesCount, orderChunks);
     }
 
     public enum State {
-        CLOSED, OPEN, BOOKED;
+        CLOSED, OPEN, BOOKED
     }
 }

@@ -1,12 +1,11 @@
 package pl.ki.recruitment.restaurant.domain.notification;
 
-import pl.ki.recruitment.restaurant.domain.shared.kernel.InvoiceId;
 
-class SmsCommunicationMethod implements CommunicanitiionMethod {
+class SmsCommunicationMethod implements CommunicationMethod {
 
     @Override
-    public void notify(Subscriber subscriber, InvoiceId invoiceId,
+    public void notify(Subscriber subscriber, Long Long,
                        CommunicationMethodsService communicationMethodsService) {
-        communicationMethodsService.notifyBySms(subscriber.getPhoneNumber(), invoiceId);
+        communicationMethodsService.notifyBySms(subscriber.getPhoneNumber(), Long);
     }
 }

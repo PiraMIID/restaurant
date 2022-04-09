@@ -1,8 +1,10 @@
 package pl.ki.recruitment.restaurant.domain.invoice;
 
-import pl.ki.recruitment.restaurant.domain.shared.kernel.InvoiceId;
+import java.util.Optional;
 
 interface InvoiceRepository {
 
-    InvoiceId save(Invoice invoice);
+    Invoice save(Invoice invoice);
+
+    Optional<Invoice> get(Long Long);
 }

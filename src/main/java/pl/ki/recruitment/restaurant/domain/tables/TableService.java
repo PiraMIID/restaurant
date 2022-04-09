@@ -1,79 +1,61 @@
 package pl.ki.recruitment.restaurant.domain.tables;
 
-import pl.ki.recruitment.restaurant.domain.shared.kernel.OrderChunkDTO;
+import pl.ki.recruitment.restaurant.domain.invoice.InvoiceService;
+import pl.ki.recruitment.restaurant.domain.localization.Localization;
+import pl.ki.recruitment.restaurant.domain.order.OrderChunkDTO;
+
+import static pl.ki.recruitment.restaurant.domain.tables.Table.State.*;
 
 class TableService {
 
-    private final TableRepository repo;
+    private final TableRepository tableRepository;
     private final InvoiceService invoiceService;
 
     protected TableService(TableRepository repo, InvoiceService invoiceService) {
-        this.repo = repo;
+        this.tableRepository = repo;
         this.invoiceService = invoiceService;
     }
 
-    public TableId createTable(LocalizationId localizationId, String roomId, String positionId,
-                               PlacesCount placesCount) {
-        vetoIfTableAlreadyExists(localizationId, roomId, positionId);
-
-        Table table = new Table(localizationId, roomId, positionId, placesCount);
-
-        return repo.save(table);
-    }
-
-    public void openTable(TableId tableId) {
-        Table table = findBy(tableId);
-
-        table.open();
-
-        save(table);
-    }
-
-    public void addOrderChunk(TableId tableId, OrderChunkDTO orderChunkDTO) {
-        Table table = findBy(tableId);
-
-        table.addOrderChunk(orderChunkDTO);
-
-        save(table);
-    }
-
-    public void bookTable(TableId tableId) {
-        Table table = repo.findById(tableId);
-        vetoIfTableNotExists(table, tableId);
-
-        table.book();
-
-        save(table);
-    }
-
-    public void closeTable(TableId tableId) {
-        Table table = findBy(tableId);
-
-        table.close(invoiceService);
-
-        save(table);
-    }
-
-    private Table findBy(TableId tableId) {
-        Table table = repo.findById(tableId);
-        vetoIfTableNotExists(table, tableId);
-
-        return table;
-    }
-
-    private void vetoIfTableNotExists(Table table, TableId tableId) {
-        if (table == null) {
-            throw new TableNotExistsException(tableId);
+    public Table createTable(Localization localization, int roomId, int positionId, int placesCount) {
+        Table table = new Table(localization, roomId, positionId, placesCount);
+        if (!tableRepository.checkIsNotAlreadyExist(localization, roomId, positionId)) {
+            throw new TableAlredyExistException();
         }
+        return tableRepository.save(table);
     }
 
-    private void save(Table table) {
-        repo.save(table);
+    public void openTable(Long tableId) {
+        Table table = findById(tableId);
+        table.setState(OPEN);
     }
 
-    private void vetoIfTableAlreadyExists(LocalizationId localizationId, String roomId, String positionId) {
-        if (repo.findBy(localizationId, new RoomId(roomId), new PositionId(positionId)) != null) {
-            throw new CannotCreateTableException();
+    public void addOrderChunk(Long tableId, OrderChunkDTO orderChunkDTO) {
+        Table table = findById(tableId);
+        table.getOrderChunks().add(orderChunkDTO);
+        save(table);
+    }
+
+    public Table bookTable(Long tableId) {
+        Table table = findById(tableId);
+        if (table.getState().equals(OPEN)) {
+            table.setState(BOOKED);
+            return tableRepository.save(table);
         }
+        throw new TableIsNotOpenException();
     }
+
+    public void closeTable(Long tableId) {
+        Table table = findById(tableId);
+        table.setState(CLOSED);
+    }
+
+    Table findById(Long tableId) {
+        return tableRepository.findById(tableId)
+                .orElseThrow(TableNotExistsException::new);
+    }
+
+    Table save(Table table) {
+        return tableRepository.save(table);
+    }
+
 }

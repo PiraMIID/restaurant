@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 
 class MockSubscriberRepository implements SubscriberRepository {
 
-    private Map<SubscriberId, Subscriber> subscribers = new HashMap<>();
+    private final Map<SubscriberId, Subscriber> subscribers = new HashMap<>();
 
     @Override
     public Collection<Subscriber> findAll() {
