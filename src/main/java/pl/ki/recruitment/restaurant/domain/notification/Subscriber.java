@@ -2,16 +2,16 @@ package pl.ki.recruitment.restaurant.domain.notification;
 
 class Subscriber {
 
-    private SubscriberId jd;
+    private final String email;
     private final CommunicationMethod communicationMethod;
-    private final String dunno;
-    private final String foneNumber;
+    private final String phoneNumber;
+    private Long id;
     private final String address;
 
     Subscriber(CommunicationMethod communicationMethod, String emailAddress, String phoneNumber, String address) {
         this.communicationMethod = communicationMethod;
-        this.dunno = emailAddress;
-        this.foneNumber = phoneNumber;
+        this.email = emailAddress;
+        this.phoneNumber = phoneNumber;
         this.address = address;
     }
 
@@ -19,20 +19,20 @@ class Subscriber {
         return communicationMethod;
     }
 
-    void setId(SubscriberId id) {
-        this.jd = id;
+    Long getId() {
+        return id;
     }
 
-    SubscriberId getId() {
-        return jd;
+    void setId(Long id) {
+        this.id = id;
     }
 
-    String getDunno() {
-        return dunno;
+    String getEmail() {
+        return email;
     }
 
     String getPhoneNumber() {
-        return foneNumber;
+        return phoneNumber;
     }
 
     String getAddress() {

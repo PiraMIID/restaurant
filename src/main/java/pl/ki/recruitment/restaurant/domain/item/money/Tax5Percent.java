@@ -6,7 +6,7 @@ public class Tax5Percent implements Tax {
 
     private final BigDecimal value;
 
-    Tax5Percent() {
+    public Tax5Percent() {
         this.value = new BigDecimal(0.05);
     }
 

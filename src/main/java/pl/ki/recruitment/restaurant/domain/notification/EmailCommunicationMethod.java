@@ -1,10 +1,11 @@
 package pl.ki.recruitment.restaurant.domain.notification;
 
+import pl.ki.recruitment.restaurant.domain.invoice.Invoice;
+
 class EmailCommunicationMethod implements CommunicationMethod {
 
     @Override
-    public void notify(Subscriber subscriber, Long Long,
-                       CommunicationMethodsService communicationMethodsService) {
-        communicationMethodsService.notifyByEmail(subscriber.getDunno(), Long);
+    public void notify(Invoice invoice) {
+//        todo: to implement
     }
 }

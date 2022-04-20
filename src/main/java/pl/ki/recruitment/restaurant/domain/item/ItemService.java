@@ -13,13 +13,4 @@ public class ItemService {
                 .orElseThrow(ItemWithThisIdNotExistException::new);
     }
 
-//    public BigDecimal getPrice(OrderChunkDTO orderChunkDTO) {
-//        Money price = new BigDecimal();
-//        orderChunkDTO.getItems().forEach(
-//                (itemId, integer) -> {
-//                    price.add(itemRepository.get(itemId).getPrice());
-//
-//                }
-//        );
-//    }
 }

@@ -1,5 +1,5 @@
 package pl.ki.recruitment.restaurant.domain.tables;
 
-class cannotclosetableexception extends RuntimeException {
+class CannotCloseTableException extends RuntimeException {
 
 }

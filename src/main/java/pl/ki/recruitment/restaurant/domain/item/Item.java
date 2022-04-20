@@ -3,7 +3,6 @@ package pl.ki.recruitment.restaurant.domain.item;
 import pl.ki.recruitment.restaurant.domain.item.money.Tax;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 import java.util.Objects;
 
 public class Item {
@@ -12,12 +11,10 @@ public class Item {
     private BigDecimal price;
     private Tax tax;
 
-    {
-        price.setScale(2, RoundingMode.HALF_EVEN);
+    public Item() {
     }
 
-
-    Item(BigDecimal price, Tax tax) {
+    public Item(BigDecimal price, Tax tax) {
         this.price = price;
         this.tax = tax;
     }

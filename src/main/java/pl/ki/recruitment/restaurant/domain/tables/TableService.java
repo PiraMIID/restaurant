@@ -6,7 +6,7 @@ import pl.ki.recruitment.restaurant.domain.order.OrderChunkDTO;
 
 import static pl.ki.recruitment.restaurant.domain.tables.Table.State.*;
 
-class TableService {
+public class TableService {
 
     private final TableRepository tableRepository;
     private final InvoiceService invoiceService;
@@ -21,12 +21,17 @@ class TableService {
         if (!tableRepository.checkIsNotAlreadyExist(localization, roomId, positionId)) {
             throw new TableAlredyExistException();
         }
-        return tableRepository.save(table);
+        return tableRepository.create(table);
     }
 
     public void openTable(Long tableId) {
         Table table = findById(tableId);
+        if (table.getState().equals(OPEN)) {
+            throw new CannotOpenTableException();
+        }
         table.setState(OPEN);
+        tableRepository.save(table);
+
     }
 
     public void addOrderChunk(Long tableId, OrderChunkDTO orderChunkDTO) {
@@ -35,21 +40,28 @@ class TableService {
         save(table);
     }
 
-    public Table bookTable(Long tableId) {
+    public void bookTable(Long tableId) {
         Table table = findById(tableId);
         if (table.getState().equals(OPEN)) {
-            table.setState(BOOKED);
-            return tableRepository.save(table);
+            throw new CannotBookTableException();
         }
-        throw new TableIsNotOpenException();
+        table.setState(BOOKED);
+        tableRepository.save(table);
     }
 
     public void closeTable(Long tableId) {
         Table table = findById(tableId);
+        if (table.getState().equals(CLOSED)) {
+            throw new CannotCloseTableException();
+        }
+        if (!table.getOrderChunks().isEmpty()) {
+            invoiceService.createForTable(tableId);
+        }
         table.setState(CLOSED);
+        tableRepository.save(table);
     }
 
-    Table findById(Long tableId) {
+    public Table findById(Long tableId) {
         return tableRepository.findById(tableId)
                 .orElseThrow(TableNotExistsException::new);
     }

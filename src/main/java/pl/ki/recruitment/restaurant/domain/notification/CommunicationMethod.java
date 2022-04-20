@@ -1,6 +1,7 @@
 package pl.ki.recruitment.restaurant.domain.notification;
 
-interface CommunicationMethod {
+import pl.ki.recruitment.restaurant.domain.invoice.Invoice;
 
-    void notify(Subscriber subscriber, Long Long, CommunicationMethodsService communicationMethodsService);
+interface CommunicationMethod {
+    void notify(Invoice invoice);
 }

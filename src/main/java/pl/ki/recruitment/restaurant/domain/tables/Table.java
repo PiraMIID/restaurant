@@ -3,18 +3,21 @@ package pl.ki.recruitment.restaurant.domain.tables;
 import pl.ki.recruitment.restaurant.domain.localization.Localization;
 import pl.ki.recruitment.restaurant.domain.order.OrderChunkDTO;
 
+import java.util.List;
 import java.util.Objects;
-import java.util.Set;
 
-class Table {
+public class Table {
 
-    private final Localization localization;
-    private final int roomId;
-    private final int positionId;
-    private final int placesCount;
+    private Localization localization;
+    private int roomId;
+    private int positionId;
+    private int placesCount;
     private Long id;
     private State state;
-    private Set<OrderChunkDTO> orderChunks;
+    private List<OrderChunkDTO> orderChunks;
+
+    public Table() {
+    }
 
     public Table(Localization localization, int roomId, int positionId, int placesCount) {
         this.localization = localization;
@@ -22,6 +25,38 @@ class Table {
         this.positionId = positionId;
         this.placesCount = placesCount;
         this.state = State.CLOSED;
+    }
+
+    public Localization getLocalization() {
+        return localization;
+    }
+
+    public void setLocalization(Localization localization) {
+        this.localization = localization;
+    }
+
+    public int getRoomId() {
+        return roomId;
+    }
+
+    public void setRoomId(int roomId) {
+        this.roomId = roomId;
+    }
+
+    public int getPositionId() {
+        return positionId;
+    }
+
+    public void setPositionId(int positionId) {
+        this.positionId = positionId;
+    }
+
+    public int getPlacesCount() {
+        return placesCount;
+    }
+
+    public void setPlacesCount(int placesCount) {
+        this.placesCount = placesCount;
     }
 
     public Long getId() {
@@ -40,24 +75,12 @@ class Table {
         this.state = state;
     }
 
-    public Localization getLocalization() {
-        return localization;
-    }
-
-    public int getRoomId() {
-        return roomId;
-    }
-
-    public int getPositionId() {
-        return positionId;
-    }
-
-    public int getPlacesCount() {
-        return placesCount;
-    }
-
-    public Set<OrderChunkDTO> getOrderChunks() {
+    public List<OrderChunkDTO> getOrderChunks() {
         return orderChunks;
+    }
+
+    public void setOrderChunks(List<OrderChunkDTO> orderChunks) {
+        this.orderChunks = orderChunks;
     }
 
     @Override
@@ -75,5 +98,18 @@ class Table {
 
     public enum State {
         CLOSED, OPEN, BOOKED
+    }
+
+    @Override
+    public String toString() {
+        return "Table{" +
+                "localization=" + localization +
+                ", roomId=" + roomId +
+                ", positionId=" + positionId +
+                ", placesCount=" + placesCount +
+                ", id=" + id +
+                ", state=" + state +
+                ", orderChunks=" + orderChunks +
+                '}';
     }
 }

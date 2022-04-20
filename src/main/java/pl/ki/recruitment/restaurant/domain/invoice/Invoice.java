@@ -1,29 +1,33 @@
 package pl.ki.recruitment.restaurant.domain.invoice;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 
-class Invoice {
+public class Invoice {
 
-    private Long Long;
+    private Long id;
     private BigDecimal totalPrice;
     private BigDecimal totalTax;
 
+
     public Invoice() {
+        this.totalPrice = new BigDecimal(0).setScale(2, RoundingMode.HALF_EVEN);
+        this.totalTax = new BigDecimal(0).setScale(2, RoundingMode.HALF_EVEN);
     }
 
-    public Invoice(Long Long, BigDecimal totalPrice, BigDecimal totalTax) {
-        this.Long = Long;
-        this.totalPrice = totalPrice;
-        this.totalTax = totalTax;
+    public Invoice(Long id, BigDecimal totalPrice, BigDecimal totalTax) {
+        this.id = id;
+        this.totalPrice = totalPrice.setScale(2, RoundingMode.HALF_EVEN);
+        this.totalTax = totalTax.setScale(2, RoundingMode.HALF_EVEN);
     }
 
-    public Long getLong() {
-        return Long;
+    public Long getId() {
+        return id;
     }
 
-    public void setLong(Long Long) {
-        this.Long = Long;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public BigDecimal getTotalPrice() {
@@ -47,11 +51,20 @@ class Invoice {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Invoice invoice = (Invoice) o;
-        return Objects.equals(Long, invoice.Long) && Objects.equals(totalPrice, invoice.totalPrice) && Objects.equals(totalTax, invoice.totalTax);
+        return Objects.equals(id, invoice.id) && Objects.equals(totalPrice, invoice.totalPrice) && Objects.equals(totalTax, invoice.totalTax);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(Long, totalPrice, totalTax);
+        return Objects.hash(id, totalPrice, totalTax);
+    }
+
+    @Override
+    public String toString() {
+        return "Invoice{" +
+                "id=" + id +
+                ", totalPrice=" + totalPrice +
+                ", totalTax=" + totalTax +
+                '}';
     }
 }

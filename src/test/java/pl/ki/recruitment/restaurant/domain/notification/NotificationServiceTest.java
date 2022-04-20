@@ -1,103 +1,88 @@
 package pl.ki.recruitment.restaurant.domain.notification;
 
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+import pl.ki.recruitment.restaurant.domain.invoice.Invoice;
 
+import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
 
+@ExtendWith(MockitoExtension.class)
 class NotificationServiceTest {
 
-    private final MockSubscriberRepository repo = new MockSubscriberRepository();
-    private final MockCommunicationMethodService communicationMethodsService = new MockCommunicationMethodService();
-    private final NotificationService service = new NotificationService(repo, communicationMethodsService);
+    @Mock
+    private SubscriberRepository subscriberRepository;
+    @Mock
+    private CommunicationMethodsService communicationMethodsService;
+    @InjectMocks
+    private NotificationService underTest;
 
     @Test
-    public void test1() {
-        //given
-        subscriber("1").withEmailAddress("e1@test.com").withCommunicationMethod(emailCommunicationMethod()).create();
-        subscriber("2").withPhoneNumber("11-221-221").withCommunicationMethod(smsCommunicationMethod()).create();
-        subscriber("3").withAddress("10 Downing Str. London").withCommunicationMethod(pigeonCommunicationMethod())
-                .create();
+    void shouldThrowSubscriberDoesNotExistExceptionWhenSubscriberNotExist() {
 
-        //when
-        notifyAboutNewInvoice("12321");
+        // Given
+        Optional<Subscriber> optionalSubscriber = Optional.empty();
 
-        //then
-        assertSubscriberNotified("1", "12321");
-        assertSubscriberNotified("2", "12321");
-        assertSubscriberNotified("3", "12321");
+        // When
+        when(subscriberRepository.getById(anyLong())).thenReturn(optionalSubscriber);
+
+        // Then
+        assertThrows(SubscriberDoesNotExistException.class, () -> underTest.getSubscriberById(anyLong()));
     }
 
-    private void notifyAboutNewInvoice(String Long) {
-        service.notifyAboutNewInvoice(new Long(Long));
+    @Test
+    void shouldReturnedSubscriberWhenExist() {
+
+        // Given
+        Subscriber mockSubscriber = mock(Subscriber.class);
+        Optional<Subscriber> optionalSubscriber = Optional.of(mockSubscriber);
+
+        // When
+        when(subscriberRepository.getById(anyLong())).thenReturn(optionalSubscriber);
+
+        // Then
+        assertDoesNotThrow(() -> underTest.getSubscriberById(anyLong()));
+        assertEquals(mockSubscriber, underTest.getSubscriberById(anyLong()));
     }
 
-    private CommunicationMethod emailCommunicationMethod() {
-        return new EmailCommunicationMethod();
+    @Test
+    void shouldNotifyAboutNewInvoiceByCallMethodNotifyWithPreferredCommunicationType() {
+
+        // Given
+        Subscriber mockSubscriber = mock(Subscriber.class);
+        Optional<Subscriber> optionalSubscriber = Optional.of(mockSubscriber);
+
+        Invoice mockInvoice = mock(Invoice.class);
+
+        EmailCommunicationMethod mockEmailCommunicationMethod = mock(EmailCommunicationMethod.class);
+        SmsCommunicationMethod mockSmsCommunicationMethod = mock(SmsCommunicationMethod.class);
+        PigeonCommunicationMethod mockPigeonCommunicationMethod = mock(PigeonCommunicationMethod.class);
+
+        // When
+        when(subscriberRepository.getById(anyLong())).thenReturn(optionalSubscriber);
+
+        when(mockSubscriber.getPreferredCommunicationMethod())
+                .thenReturn(mockEmailCommunicationMethod)
+                .thenReturn(mockSmsCommunicationMethod)
+                .thenReturn(mockPigeonCommunicationMethod);
+
+        // Then
+        underTest.notifyAboutNewInvoice(anyLong(), mockInvoice);
+        verify(mockEmailCommunicationMethod, times(1)).notify(mockInvoice);
+
+        underTest.notifyAboutNewInvoice(anyLong(), mockInvoice);
+        verify(mockSmsCommunicationMethod, times(1)).notify(mockInvoice);
+
+        underTest.notifyAboutNewInvoice(anyLong(), mockInvoice);
+        verify(mockPigeonCommunicationMethod, times(1)).notify(mockInvoice);
+
+
     }
 
-    private CommunicationMethod smsCommunicationMethod() {
-        return new SmsCommunicationMethod();
-    }
-
-    private CommunicationMethod pigeonCommunicationMethod() {
-        return new PigeonCommunicationMethod();
-    }
-
-    private SubscriberAssembler subscriber(String subscriberId) {
-        return new SubscriberAssembler(new SubscriberId(subscriberId));
-    }
-
-    private void assertSubscriberNotified(String subscriberId, String Long) {
-        Subscriber subscriber = repo.findById(new SubscriberId(subscriberId));
-        CommunicationMethod commMethod = subscriber.getPreferredCommunicationMethod();
-
-        communicationMethodsService.recordAssertionNotification();
-        commMethod.notify(subscriber, new Long(Long), communicationMethodsService);
-        assertTrue(communicationMethodsService.assertLastNotificationFound());
-    }
-
-    private class SubscriberAssembler {
-
-        private final SubscriberId subscriberId;
-        private CommunicationMethod communicationMethod;
-        private String emailAddress;
-        private String phoneNumber;
-        private String address;
-
-        public SubscriberAssembler(SubscriberId subscriberId) {
-            this.subscriberId = subscriberId;
-        }
-
-        public SubscriberAssembler withEmailAddress(String emailAddress) {
-            this.emailAddress = emailAddress;
-
-            return this;
-        }
-
-        public SubscriberAssembler withAddress(String address) {
-            this.address = address;
-
-            return this;
-        }
-
-        public SubscriberAssembler withPhoneNumber(String phoneNumber) {
-            this.phoneNumber = phoneNumber;
-
-            return this;
-        }
-
-        public SubscriberAssembler withCommunicationMethod(CommunicationMethod communicationMethod) {
-            this.communicationMethod = communicationMethod;
-
-            return this;
-        }
-
-        public void create() {
-            Subscriber subscriber = new Subscriber(communicationMethod, emailAddress, phoneNumber, address);
-            subscriber.setId(subscriberId);
-
-            repo.add(subscriber);
-        }
-    }
 }

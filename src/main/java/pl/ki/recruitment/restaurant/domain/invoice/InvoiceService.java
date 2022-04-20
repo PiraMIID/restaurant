@@ -1,52 +1,61 @@
 package pl.ki.recruitment.restaurant.domain.invoice;
 
+import pl.ki.recruitment.restaurant.domain.item.Item;
 import pl.ki.recruitment.restaurant.domain.item.ItemService;
 import pl.ki.recruitment.restaurant.domain.order.OrderChunkDTO;
+import pl.ki.recruitment.restaurant.domain.tables.TableRepository;
+import pl.ki.recruitment.restaurant.domain.tables.TableService;
 
-import java.util.LinkedList;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+import java.util.Arrays;
+
 
 public class InvoiceService {
 
     private final InvoiceRepository invoiceRepository;
     private final ItemService itemService;
+    private final TableService tableService;
+    private final TableRepository tableRepository;
 
-    InvoiceService(InvoiceRepository repo, ItemService itemService) {
-        this.invoiceRepository = repo;
+    InvoiceService(InvoiceRepository invoiceRepository, ItemService itemService, TableService tableService, TableRepository tableRepository) {
+        this.invoiceRepository = invoiceRepository;
         this.itemService = itemService;
+        this.tableService = tableService;
+        this.tableRepository = tableRepository;
     }
 
     Invoice create() {
         Invoice invoice = new Invoice();
-        return invoiceRepository.save(invoice);
+        return invoiceRepository.create(invoice);
     }
 
-//    Invoice createWith(LinkedList<OrderChunkDTO> orderChunks) {
-//        Invoice invoice = create();
-//        orderChunks.forEach(orderChunkDTO -> {
-//            itemService.getPrice(orderChunkDTO);
-//            itemService.getTax(orderChunkDTO);
-//        });
-//        invoice.addOrdersChunks(orderChunks);
-//    }
+    public Invoice createForTable(Long tableId) {
+        BigDecimal bigDecimalZero = BigDecimal.ZERO.setScale(2, RoundingMode.HALF_EVEN);
 
-
-    public Invoice addOrdersChunks(Long Long, LinkedList<OrderChunkDTO> orderChunks) {
-//        Invoice invoice = getById(Long);
-//        for (OrderChunkDTO orderChunk : orderChunks) {
-//            orderChunk.getItems().forEach(itemId -> {
-//                Item item = itemService.get(itemId);
-//                invoice.setTotalPrice(item.getPrice().multiply(BigDecimal.valueOf(orderChunk.getItems().get(item.getId()))));
-//
-////                                Tax tax = item.getTax();
-////                                this.totalTax.add(tax.calculateFor(item.getPrice()).multiply(orderChunk.getCount(itemId)));
-//                invoice.setTotalTax(item.getTax().getValue().add(item.getTax().calculateFor(item.getPrice())));
-//            });
-//        }
-        return null;
+        BigDecimal[] indexZeroTotalPriceIndexOneTotalTax = {bigDecimalZero, bigDecimalZero};
+        tableService.findById(tableId)
+                .getOrderChunks()
+                .stream()
+                .map(OrderChunkDTO::getItems)
+                .forEach(longIntegerMap -> {
+                    longIntegerMap.forEach((idItem, countItemInOrder) -> {
+//                        System.out.println(idItem + " "+ countItemInOrder);
+                        Item item = itemService.get(idItem);
+//                        System.out.println(idItem + " "+ countItemInOrder);
+//                        System.out.println(item);
+                        indexZeroTotalPriceIndexOneTotalTax[0] = indexZeroTotalPriceIndexOneTotalTax[0]
+                                .add(item.getPrice().multiply(BigDecimal.valueOf(countItemInOrder)));
+                        indexZeroTotalPriceIndexOneTotalTax[1] = indexZeroTotalPriceIndexOneTotalTax[1]
+                                .add(item.getTax().calculateFor(item.getPrice()).multiply(BigDecimal.valueOf(countItemInOrder))).setScale(2, RoundingMode.HALF_EVEN);
+                    });
+                });
+        System.out.println(Arrays.toString(Arrays.stream(indexZeroTotalPriceIndexOneTotalTax).toArray()));
+        return invoiceRepository.create(tableId, indexZeroTotalPriceIndexOneTotalTax[0], indexZeroTotalPriceIndexOneTotalTax[1]);
     }
 
-    private Invoice getById(Long Long) {
-        return invoiceRepository.get(Long)
-                .orElseThrow(InvoiceNotExistException::new);
+    private Invoice getById(Invoice invoice) {
+        return invoiceRepository.get(invoice).orElseThrow(InvoiceNotExistException::new);
     }
+
 }

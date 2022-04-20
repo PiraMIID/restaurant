@@ -1,27 +1,24 @@
 package pl.ki.recruitment.restaurant.domain.notification;
-
-
-import java.util.Collection;
+import pl.ki.recruitment.restaurant.domain.invoice.Invoice;
 
 class NotificationService {
 
-    private final SubscriberRepository SUBSCRIBER_REPO;
+    private final SubscriberRepository subscriberRepository;
     private final CommunicationMethodsService communicationMethodsService;
 
-    NotificationService(SubscriberRepository subscriberRepo, CommunicationMethodsService communicationMethodsService) {
-        this.SUBSCRIBER_REPO = subscriberRepo;
+    NotificationService(SubscriberRepository subscriberRepository, CommunicationMethodsService communicationMethodsService) {
+        this.subscriberRepository = subscriberRepository;
         this.communicationMethodsService = communicationMethodsService;
     }
 
-    void notifyAboutNewInvoice(Long Long) {
-        Collection<Subscriber> subscribers = findSubscribers();
-
-        subscribers.stream().forEachOrdered(subscriber -> {
-            subscriber.getPreferredCommunicationMethod().notify(subscriber, Long, communicationMethodsService);
-        });
+    void notifyAboutNewInvoice(Long subscriberId, Invoice invoice) {
+        Subscriber subscriber = getSubscriberById(subscriberId);
+        subscriber.getPreferredCommunicationMethod().notify(invoice);
     }
 
-    private Collection<Subscriber> findSubscribers() {
-        return SUBSCRIBER_REPO.findAll();
+    Subscriber getSubscriberById(Long subscriberId) {
+        return subscriberRepository.getById(subscriberId)
+                .orElseThrow(SubscriberDoesNotExistException::new);
     }
+
 }
