@@ -4,8 +4,5 @@ import java.util.Collection;
 import java.util.Optional;
 
 interface SubscriberRepository {
-
-    Collection<Subscriber> findAll();
-
     Optional<Subscriber> getById(Long subscriberId);
 }

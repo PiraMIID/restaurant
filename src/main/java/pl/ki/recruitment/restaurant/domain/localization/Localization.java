@@ -3,7 +3,6 @@ package pl.ki.recruitment.restaurant.domain.localization;
 import java.util.Objects;
 
 public class Localization {
-
     private Long id;
     private String country;
     private String city;

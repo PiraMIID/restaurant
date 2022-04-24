@@ -8,7 +8,7 @@ public class LocalizationService {
         this.localizationRepositories = localizationRepositories;
     }
 
-    Localization getById(Long idLocalization) {
+    public Localization getById(Long idLocalization) {
         return localizationRepositories.get(idLocalization)
                 .orElseThrow(LocalizationDoNotExistException::new);
     }

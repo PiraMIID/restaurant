@@ -6,6 +6,8 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import pl.ki.recruitment.restaurant.domain.invoice.Invoice;
+import pl.ki.recruitment.restaurant.domain.invoice.InvoiceNotExistException;
+import pl.ki.recruitment.restaurant.domain.invoice.InvoiceRepository;
 
 import java.util.Optional;
 
@@ -17,72 +19,67 @@ import static org.mockito.Mockito.*;
 class NotificationServiceTest {
 
     @Mock
-    private SubscriberRepository subscriberRepository;
+    SubscriberRepository subscriberRepository;
     @Mock
-    private CommunicationMethodsService communicationMethodsService;
+    InvoiceRepository invoiceRepository;
     @InjectMocks
-    private NotificationService underTest;
+    NotificationService underTest;
 
     @Test
-    void shouldThrowSubscriberDoesNotExistExceptionWhenSubscriberNotExist() {
-
+    void shouldNotifyAboutNewInvoice() {
         // Given
-        Optional<Subscriber> optionalSubscriber = Optional.empty();
+        Subscriber subscriber = mock(Subscriber.class);
+        Optional<Subscriber> optionalSubscriber = Optional.of(subscriber);
+        Invoice invoice = mock(Invoice.class);
+        Optional<Invoice> optionalInvoice = Optional.of(invoice);
 
         // When
         when(subscriberRepository.getById(anyLong())).thenReturn(optionalSubscriber);
+        when(invoiceRepository.get(anyLong())).thenReturn(optionalInvoice);
 
+//        i - invoice as argument in method sendNotifyAboutNewInvoice
+        doAnswer((i) -> {
+            assertEquals(invoice, i.getArgument(0));
+            return null;
+        }).when(subscriber).sendNotifyAboutNewInvoice(invoice);
+//
         // Then
-        assertThrows(SubscriberDoesNotExistException.class, () -> underTest.getSubscriberById(anyLong()));
+        underTest.notifyAboutNewInvoice(subscriber.getId(), invoice.getId());
     }
 
     @Test
-    void shouldReturnedSubscriberWhenExist() {
-
+    void shouldReturnInvoiceIfExistOrThrowIfNot() {
         // Given
-        Subscriber mockSubscriber = mock(Subscriber.class);
-        Optional<Subscriber> optionalSubscriber = Optional.of(mockSubscriber);
+        Invoice invoice = mock(Invoice.class);
+        Optional<Invoice> optionalInvoice = Optional.of(invoice);
 
         // When
-        when(subscriberRepository.getById(anyLong())).thenReturn(optionalSubscriber);
+        when(invoiceRepository.get(anyLong()))
+                .thenReturn(optionalInvoice)
+                .thenReturn(Optional.empty());
 
         // Then
-        assertDoesNotThrow(() -> underTest.getSubscriberById(anyLong()));
-        assertEquals(mockSubscriber, underTest.getSubscriberById(anyLong()));
+
+        assertEquals(invoice, underTest.getInvoiceById(anyLong()));
+        assertThrows(InvoiceNotExistException.class, () -> underTest.getInvoiceById(anyLong()));
+
     }
 
     @Test
-    void shouldNotifyAboutNewInvoiceByCallMethodNotifyWithPreferredCommunicationType() {
-
+    void shouldReturnSubscriberIfExistOrThrowIfNot() {
         // Given
-        Subscriber mockSubscriber = mock(Subscriber.class);
-        Optional<Subscriber> optionalSubscriber = Optional.of(mockSubscriber);
-
-        Invoice mockInvoice = mock(Invoice.class);
-
-        EmailCommunicationMethod mockEmailCommunicationMethod = mock(EmailCommunicationMethod.class);
-        SmsCommunicationMethod mockSmsCommunicationMethod = mock(SmsCommunicationMethod.class);
-        PigeonCommunicationMethod mockPigeonCommunicationMethod = mock(PigeonCommunicationMethod.class);
+        Subscriber subscriber = mock(Subscriber.class);
+        Optional<Subscriber> optionalSubscriber = Optional.of(subscriber);
 
         // When
-        when(subscriberRepository.getById(anyLong())).thenReturn(optionalSubscriber);
-
-        when(mockSubscriber.getPreferredCommunicationMethod())
-                .thenReturn(mockEmailCommunicationMethod)
-                .thenReturn(mockSmsCommunicationMethod)
-                .thenReturn(mockPigeonCommunicationMethod);
+        when(subscriberRepository.getById(anyLong()))
+                .thenReturn(optionalSubscriber)
+                .thenReturn(Optional.empty());
 
         // Then
-        underTest.notifyAboutNewInvoice(anyLong(), mockInvoice);
-        verify(mockEmailCommunicationMethod, times(1)).notify(mockInvoice);
 
-        underTest.notifyAboutNewInvoice(anyLong(), mockInvoice);
-        verify(mockSmsCommunicationMethod, times(1)).notify(mockInvoice);
-
-        underTest.notifyAboutNewInvoice(anyLong(), mockInvoice);
-        verify(mockPigeonCommunicationMethod, times(1)).notify(mockInvoice);
-
+        assertEquals(subscriber, underTest.getSubscriberById(anyLong()));
+        assertThrows(SubscriberNotFoundException.class, () -> underTest.getSubscriberById(anyLong()));
 
     }
-
 }

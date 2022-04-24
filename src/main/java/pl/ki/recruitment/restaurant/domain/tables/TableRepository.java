@@ -8,9 +8,7 @@ public interface TableRepository {
 
     Optional<Table> findById(Long tableId);
 
-    Optional<Table> findBy(Localization localizationId, int roomId, int positionId);
-
-    boolean checkIsNotAlreadyExist(Localization localizationId, int roomId, int positionId);
+    boolean checkIsNotAlreadyExist(Long localizationId,Long roomId,Long positionId);
 
     Table create(Table table);
 

@@ -5,30 +5,36 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
+import pl.ki.recruitment.restaurant.domain.invoice.InvoiceService;
 import pl.ki.recruitment.restaurant.domain.localization.Localization;
-import pl.ki.recruitment.restaurant.domain.order.OrderChunkDTO;
-import pl.ki.recruitment.restaurant.domain.order.OrderChunkService;
+import pl.ki.recruitment.restaurant.domain.localization.LocalizationService;
 
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.*;
 import static pl.ki.recruitment.restaurant.domain.tables.Table.State.*;
 
-
+@MockitoSettings(strictness = Strictness.STRICT_STUBS)
 @ExtendWith(MockitoExtension.class)
 class TableServiceTest {
 
-    @InjectMocks
-    private TableService underTest;
+    @Mock
+    LocalizationService localizationService;
+    @Mock
+    InvoiceService invoiceService;
     @Mock
     private TableRepository tableRepository;
-    @Mock
-    private OrderChunkService orderChunkService;
+    @InjectMocks
+    private TableService underTest;
     @Mock
     private Localization localization;
 
@@ -40,20 +46,23 @@ class TableServiceTest {
         table.setLocalization(localization);
 
         //when
-        when(tableRepository.create(any(Table.class))).thenReturn(table);
-
-        when(tableRepository.checkIsNotAlreadyExist(localization, table.getRoomId(), table.getPositionId()))
+        when(tableRepository.checkIsNotAlreadyExist(anyLong(), anyLong(), anyLong()))
                 .thenReturn(true)
                 .thenReturn(false);
-        Table tableCreated = underTest.createTable(localization, anyInt(), anyInt(), anyInt());
+
+
+        when(localizationService.getById(anyLong())).thenReturn(localization);
+
+        when(tableRepository.create(any(Table.class))).thenReturn(table);
+        Table tableResult = underTest.createTable(localization.getId(),table.getRoomId(), table.getPositionId(), anyInt());
 
         //then
 
         // ok
-        assertEquals(table, tableCreated);
+        assertEquals(table, tableResult);
 
         // throw when already exist
-        assertThrows(TableAlredyExistException.class, () -> underTest.createTable(localization, anyInt(), anyInt(), anyInt()));
+        assertThrows(TableAlreadyExistException.class, () -> underTest.createTable(localization.getId(),table.getRoomId(), table.getPositionId(), anyInt()));
 
     }
 
@@ -138,10 +147,6 @@ class TableServiceTest {
 
         // When
         when(tableRepository.findById(anyLong())).thenReturn(tableOptional);
-//        System.out.println(table.getState());
-//        System.out.println(table.getState());
-//        System.out.println(table.getState());
-
 
         // Then
 
@@ -156,18 +161,6 @@ class TableServiceTest {
 
     }
 
-    @Test
-    void shouldTrowWhenCreateTableAlreadyExist() {
-        //given
-        //when
-        when(tableRepository.checkIsNotAlreadyExist(localization, 1, 1))
-                .thenReturn(false)
-                .thenReturn(true);
-        // then
-        assertThrows(TableAlredyExistException.class, () -> underTest.createTable(localization, 1, 1, 1));
-        assertDoesNotThrow(() -> underTest.createTable(localization, 1, 1, 1));
-
-    }
 
     @Test
     void shouldAddOrderChunkToList() {
@@ -193,5 +186,22 @@ class TableServiceTest {
 
     }
 
+    @Test
+    void shouldCreateInvoiceWhenTableClosingAndOrderChunksIsNotEmpty() {
+        // Given
+        Table table = mock(Table.class);
+        Optional<Table> optionalTable = Optional.of(table);
+        given(tableRepository.findById(anyLong())).willReturn(optionalTable);
+        given(table.getState()).willReturn(OPEN);
+        LinkedList<OrderChunkDTO> orderChunkDTOS = new LinkedList<>();
+        orderChunkDTOS.add(mock(OrderChunkDTO.class));
 
+        // When
+        when(table.getOrderChunks()).thenReturn(orderChunkDTOS);
+        underTest.closeTable(anyLong());
+
+        // Then
+        verify(invoiceService,  only()).createForTable(anyLong());
+
+    }
 }

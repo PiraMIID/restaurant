@@ -1,21 +1,18 @@
 package pl.ki.recruitment.restaurant.domain.item;
 
-import pl.ki.recruitment.restaurant.domain.item.money.Tax;
+import pl.ki.recruitment.restaurant.domain.item.tax.Tax;
 
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Objects;
 
 public class Item {
-
     private Long id;
     private BigDecimal price;
     private Tax tax;
 
-    public Item() {
-    }
-
     public Item(BigDecimal price, Tax tax) {
-        this.price = price;
+        this.price = price.setScale(2, RoundingMode.HALF_EVEN);
         this.tax = tax;
     }
 

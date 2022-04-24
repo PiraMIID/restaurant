@@ -1,12 +1,16 @@
 package pl.ki.recruitment.restaurant.domain.notification;
 
+import pl.ki.recruitment.restaurant.domain.invoice.Invoice;
+
+import java.util.Objects;
+
 class Subscriber {
 
-    private final String email;
-    private final CommunicationMethod communicationMethod;
-    private final String phoneNumber;
     private Long id;
+    private final String email;
+    private final String phoneNumber;
     private final String address;
+    private final CommunicationMethod communicationMethod;
 
     Subscriber(CommunicationMethod communicationMethod, String emailAddress, String phoneNumber, String address) {
         this.communicationMethod = communicationMethod;
@@ -15,27 +19,44 @@ class Subscriber {
         this.address = address;
     }
 
-    public CommunicationMethod getPreferredCommunicationMethod() {
-        return communicationMethod;
+    public void sendNotifyAboutNewInvoice(Invoice invoice) {
+        this.getCommunicationMethod().notifyAboutNewInvoice(this, invoice);
     }
 
-    Long getId() {
-        return id;
-    }
-
-    void setId(Long id) {
-        this.id = id;
-    }
-
-    String getEmail() {
+    public String getEmail() {
         return email;
     }
 
-    String getPhoneNumber() {
+    public CommunicationMethod getCommunicationMethod() {
+        return communicationMethod;
+    }
+
+    public String getPhoneNumber() {
         return phoneNumber;
     }
 
-    String getAddress() {
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getAddress() {
         return address;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Subscriber that = (Subscriber) o;
+        return Objects.equals(email, that.email) && Objects.equals(communicationMethod, that.communicationMethod) && Objects.equals(phoneNumber, that.phoneNumber) && Objects.equals(id, that.id) && Objects.equals(address, that.address);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(email, communicationMethod, phoneNumber, id, address);
     }
 }

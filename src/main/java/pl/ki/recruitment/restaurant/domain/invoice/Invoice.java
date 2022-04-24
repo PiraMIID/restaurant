@@ -3,18 +3,11 @@ package pl.ki.recruitment.restaurant.domain.invoice;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Objects;
-
 public class Invoice {
 
     private Long id;
     private BigDecimal totalPrice;
     private BigDecimal totalTax;
-
-
-    public Invoice() {
-        this.totalPrice = new BigDecimal(0).setScale(2, RoundingMode.HALF_EVEN);
-        this.totalTax = new BigDecimal(0).setScale(2, RoundingMode.HALF_EVEN);
-    }
 
     public Invoice(Long id, BigDecimal totalPrice, BigDecimal totalTax) {
         this.id = id;

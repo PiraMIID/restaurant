@@ -1,7 +1,6 @@
 package pl.ki.recruitment.restaurant.domain.tables;
 
 import pl.ki.recruitment.restaurant.domain.localization.Localization;
-import pl.ki.recruitment.restaurant.domain.order.OrderChunkDTO;
 
 import java.util.List;
 import java.util.Objects;
@@ -9,8 +8,8 @@ import java.util.Objects;
 public class Table {
 
     private Localization localization;
-    private int roomId;
-    private int positionId;
+    private Long roomId;
+    private Long positionId;
     private int placesCount;
     private Long id;
     private State state;
@@ -19,7 +18,7 @@ public class Table {
     public Table() {
     }
 
-    public Table(Localization localization, int roomId, int positionId, int placesCount) {
+    public Table(Localization localization, Long roomId, Long positionId, int placesCount) {
         this.localization = localization;
         this.roomId = roomId;
         this.positionId = positionId;
@@ -35,19 +34,19 @@ public class Table {
         this.localization = localization;
     }
 
-    public int getRoomId() {
+    public Long getRoomId() {
         return roomId;
     }
 
-    public void setRoomId(int roomId) {
+    public void setRoomId(Long roomId) {
         this.roomId = roomId;
     }
 
-    public int getPositionId() {
+    public Long getPositionId() {
         return positionId;
     }
 
-    public void setPositionId(int positionId) {
+    public void setPositionId(Long positionId) {
         this.positionId = positionId;
     }
 
@@ -88,12 +87,12 @@ public class Table {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Table table = (Table) o;
-        return roomId == table.roomId && positionId == table.positionId && placesCount == table.placesCount && Objects.equals(id, table.id) && state == table.state && Objects.equals(localization, table.localization) && Objects.equals(orderChunks, table.orderChunks);
+        return placesCount == table.placesCount && Objects.equals(localization, table.localization) && Objects.equals(roomId, table.roomId) && Objects.equals(positionId, table.positionId) && Objects.equals(id, table.id) && state == table.state && Objects.equals(orderChunks, table.orderChunks);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(id, state, localization, roomId, positionId, placesCount, orderChunks);
+        return Objects.hash(localization, roomId, positionId, placesCount, id, state, orderChunks);
     }
 
     public enum State {

@@ -2,7 +2,7 @@ package pl.ki.recruitment.restaurant.domain.tables;
 
 import pl.ki.recruitment.restaurant.domain.invoice.InvoiceService;
 import pl.ki.recruitment.restaurant.domain.localization.Localization;
-import pl.ki.recruitment.restaurant.domain.order.OrderChunkDTO;
+import pl.ki.recruitment.restaurant.domain.localization.LocalizationService;
 
 import static pl.ki.recruitment.restaurant.domain.tables.Table.State.*;
 
@@ -10,16 +10,19 @@ public class TableService {
 
     private final TableRepository tableRepository;
     private final InvoiceService invoiceService;
+    private final LocalizationService localizationService;
 
-    protected TableService(TableRepository repo, InvoiceService invoiceService) {
+    protected TableService(TableRepository repo, InvoiceService invoiceService, LocalizationService localizationService) {
         this.tableRepository = repo;
         this.invoiceService = invoiceService;
+        this.localizationService = localizationService;
     }
 
-    public Table createTable(Localization localization, int roomId, int positionId, int placesCount) {
+    public Table createTable(Long localizationId, Long roomId, Long positionId, int placesCount) {
+        Localization localization = localizationService.getById(localizationId);
         Table table = new Table(localization, roomId, positionId, placesCount);
-        if (!tableRepository.checkIsNotAlreadyExist(localization, roomId, positionId)) {
-            throw new TableAlredyExistException();
+        if (!tableRepository.checkIsNotAlreadyExist(localizationId, roomId, positionId)) {
+            throw new TableAlreadyExistException();
         }
         return tableRepository.create(table);
     }

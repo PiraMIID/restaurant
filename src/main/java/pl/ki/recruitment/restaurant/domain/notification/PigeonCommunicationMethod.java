@@ -6,7 +6,7 @@ import pl.ki.recruitment.restaurant.domain.invoice.Invoice;
 class PigeonCommunicationMethod implements CommunicationMethod {
 
     @Override
-    public void notify(Invoice invoice) {
+    public void notifyAboutNewInvoice(Subscriber subscriber, Invoice invoice) {
 //        todo: to implement
     }
 }
