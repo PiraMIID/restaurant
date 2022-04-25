@@ -10,6 +10,6 @@ public class LocalizationService {
 
     public Localization getById(Long idLocalization) {
         return localizationRepositories.get(idLocalization)
-                .orElseThrow(LocalizationDoNotExistException::new);
+                .orElseThrow(LocalizationNotFoundException::new);
     }
 }

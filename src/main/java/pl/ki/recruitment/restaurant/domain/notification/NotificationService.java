@@ -1,6 +1,6 @@
 package pl.ki.recruitment.restaurant.domain.notification;
 import pl.ki.recruitment.restaurant.domain.invoice.Invoice;
-import pl.ki.recruitment.restaurant.domain.invoice.InvoiceNotExistException;
+import pl.ki.recruitment.restaurant.domain.invoice.InvoiceNotFoundException;
 import pl.ki.recruitment.restaurant.domain.invoice.InvoiceRepository;
 
 class NotificationService {
@@ -21,7 +21,7 @@ class NotificationService {
 
     Invoice getInvoiceById(Long invoiceId) {
         return invoiceRepository.get(invoiceId)
-                .orElseThrow(InvoiceNotExistException::new);
+                .orElseThrow(InvoiceNotFoundException::new);
     }
 
     Subscriber getSubscriberById(Long subscriberId) {
@@ -29,4 +29,18 @@ class NotificationService {
                 .orElseThrow(SubscriberNotFoundException::new);
     }
 
+    Subscriber create(CommunicationMethod communicationMethod, String email, String phoneNumber, String address) {
+        SubscribersValidateUtils.validateEmail(email);
+        SubscribersValidateUtils.validatePhoneNumber(phoneNumber);
+        checkSubscribeNotAlreadyExist(email, phoneNumber, address);
+        Subscriber subscriber = new Subscriber(communicationMethod, email, phoneNumber, address);
+        return subscriberRepository.save(subscriber);
+    }
+
+    public void checkSubscribeNotAlreadyExist(String email, String phoneNumber, String address) {
+        if (subscriberRepository.checkExistByEmailAndPhoneNumberAndAddress(email, phoneNumber, address)) {
+            throw new SubscriberAlreadyExistException();
+        }
+
+    }
 }

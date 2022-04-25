@@ -5,7 +5,6 @@ import pl.ki.recruitment.restaurant.domain.invoice.Invoice;
 import java.util.Objects;
 
 class Subscriber {
-
     private Long id;
     private final String email;
     private final String phoneNumber;

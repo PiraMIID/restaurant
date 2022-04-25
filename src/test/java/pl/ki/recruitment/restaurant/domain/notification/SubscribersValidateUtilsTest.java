@@ -40,4 +40,5 @@ class SubscribersValidateUtilsTest {
         Assertions.assertDoesNotThrow(() -> SubscribersValidateUtils.validateEmail(goodWithNumberAfterMonkey));
         Assertions.assertDoesNotThrow(() -> SubscribersValidateUtils.validateEmail(good));
     }
+
 }

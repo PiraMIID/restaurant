@@ -5,7 +5,7 @@ import java.util.regex.Pattern;
 
 public final class SubscribersValidateUtils {
 
-    public static final Pattern VALID_PHONE_NUMBER = Pattern.compile("^\\d{10}$");
+    public static final Pattern VALID_PHONE_NUMBER = Pattern.compile("^\\d{10}$"); //todo: 10 is correct ?
 
     public static final Pattern VALID_EMAIL_ADDRESS_REGEX = Pattern.compile("^[A-Z\\d._%+-]+@[A-Z0-9.-]+\\.[A-Z]{2,6}$", Pattern.CASE_INSENSITIVE);
 

@@ -12,7 +12,7 @@ public class ItemService {
 
     public Item get(Long itemId) {
         return itemRepository.get(itemId)
-                .orElseThrow(ItemDoNotExistException::new);
+                .orElseThrow(ItemNotFoundException::new);
     }
 
 

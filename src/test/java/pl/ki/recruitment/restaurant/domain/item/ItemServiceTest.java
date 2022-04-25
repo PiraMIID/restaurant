@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.BDDMockito.given;
 import static org.mockito.Mockito.mock;
@@ -40,7 +40,7 @@ class ItemServiceTest {
 
         // Then
         Assertions.assertDoesNotThrow(test);
-        Assertions.assertThrows(ItemDoNotExistException.class, test);
+        Assertions.assertThrows(ItemNotFoundException.class, test);
 
     }
 

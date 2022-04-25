@@ -66,7 +66,7 @@ public class TableService {
 
     public Table findById(Long tableId) {
         return tableRepository.findById(tableId)
-                .orElseThrow(TableNotExistsException::new);
+                .orElseThrow(TableNotFoundException::new);
     }
 
     Table save(Table table) {

@@ -9,7 +9,6 @@ import org.mockito.junit.jupiter.MockitoExtension;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
@@ -35,6 +34,6 @@ class InvoiceServiceTest {
 
         // Then
         Assertions.assertEquals(invoice, underTest.getById(anyLong()));
-        Assertions.assertThrows(InvoiceNotExistException.class, () -> underTest.getById(anyLong()));
+        Assertions.assertThrows(InvoiceNotFoundException.class, () -> underTest.getById(anyLong()));
     }
 }

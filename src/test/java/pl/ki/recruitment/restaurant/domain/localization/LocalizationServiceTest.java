@@ -48,6 +48,6 @@ class LocalizationServiceTest {
         given(localizationRepositories.get(any(Long.class))).willReturn(Optional.empty());
 //        given(underTest.getById(any(Long.class))).willReturn(Optional.empty()).
         // Given
-        assertThrows(LocalizationDoNotExistException.class, () -> underTest.getById(id));
+        assertThrows(LocalizationNotFoundException.class, () -> underTest.getById(id));
     }
 }

@@ -43,7 +43,7 @@ public class InvoiceService {
     }
 
     Invoice getById(Long invoiceId) {
-        return invoiceRepository.get(invoiceId).orElseThrow(InvoiceNotExistException::new);
+        return invoiceRepository.get(invoiceId).orElseThrow(InvoiceNotFoundException::new);
     }
 
 }
